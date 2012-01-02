@@ -247,6 +247,22 @@ static const char *extract_cookie(request_rec *r, char *a)
 	return extract_specific_cookie(r, (char *)cls->cookie_name);
 }
 
+
+static const char *extract_forwarded_for(request_rec *r, char *a)
+{
+ const char *val;
+ const char *forwarded_for;
+
+ forwarded_for = apr_table_get(r->headers_in, "X-Forwarded-For");
+ if (forwarded_for != NULL) {
+   val = ap_get_token(r->pool, &forwarded_for, 0);
+   return val;
+ }
+
+ /* return remote IP address if no X-Forwarded-For HTTP header is set */
+ return r->connection->remote_ip;
+}
+
 static const char *extract_unique_id(request_rec *r, char *a)
 {
     const char *tempid;

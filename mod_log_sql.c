@@ -491,6 +491,7 @@ static void log_sql_module_init(server_rec *s, apr_pool_t *p)
     log_sql_register_item(s,p,'t', extract_request_time,      "request_time",     0, 1);
     log_sql_register_item(s,p,'u', extract_remote_user,       "remote_user",      0, 1);
     log_sql_register_item(s,p,'U', extract_request_uri,       "request_uri",      1, 1);
+    log_sql_register_item(s,p,'x', extract_forwarded_for,     "remote_host",      0, 1);
     log_sql_register_item(s,p,'v', extract_virtual_host,      "virtual_host",     0, 1);
     log_sql_register_item(s,p,'V', extract_server_name,       "virtual_host",     0, 1);
 
