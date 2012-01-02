@@ -1,0 +1,24 @@
+TODO:
+* verify a db driver has been loaded, or dynamically load them?
+* validate table names before trying to log them.
+* write alternate DB driver (PostgreSQL, libDBI, mod_*_pool)
+* look at forcing table name to ServerName instead of on of the names in 
+  ServerAlias?
+* LogSQLRotateLogs directive with daily/monthly/weekly/etc.
+* socket-based middleman daemon with configurable conns, or connect/disconnect.
+* DBI connection pooling.
+* apr_dbd backend driver
+* ignore by cookie
+* investigate thread safety issues 
+	Use libmysqlclient_r for threaded MPM (or always?)
+	Add thread locks if using standard mysqlclient 
+	Check locking issues with the preserve file
+* rewrite main core logging function to optimize for speed.
+* Clean up table creation code.
+	support DB independent way of defining the tables
+-----
+mod_log_sql.c:349: to more error checking/force all params to be set 
+mod_log_sql.c:460: Add local_address, remote_address, server_name, connection_status 
+mod_log_sql.c:466: Document 
+mod_log_sql.c:537: What do we do here 
+mod_log_sql.c:787: Make these configurable? 

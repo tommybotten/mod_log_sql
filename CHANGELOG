@@ -1,0 +1,461 @@
+1.101: 2005-02-18?
+* fix empty comparison on itemsets for solaris issue #41
+
+1.100: 2005-01-11
+* fixes for NULL fields (empty request_args)
+* fixed a mysql reconnect bug
+* wrong hostname was logged when using mass virtual hosting
+  Use, the new 'V' logformat
+* formatted massvirutalhosting tables to swap - with _.
+* included winconfig.h in makefile
+* fixed quoting of unique_id
+* converted documentation to OOO Docbook ( a subset of the full docbook DTD)
+
+1.99: 2004-07-28
+* Added DBI support (not completed yet)
+* fixed segfault in the mysql driver escape_string function
+* fixed segfault when forcepreserve is set on.
+* switched escape_string driver function to include the string quotes.
+* On Database connection failure Database errors are printed at ERR loglevel
+  instead of debug
+* included build-apache(13|2).bat scripts in the distribution
+
+1.98: 2004-05-12
+* re-fixed apache.m4 to better detect APR and APU code
+* fixed for win32 compilation under apache 2
+* lowered minumum required apache 2 version to 2.0.40 (RH9)
+* Added LogSQLDisablePreserve to disable the preserve file.
+* Changed default preserve file location to logs/mod_log_sql-preserve
+  And made LogSQLPreserveFile root relative.
+* fixed bug where preserve file wouldn't be created in apache 2
+* finished TransferLog documentation
+* changed strstr to ap_strstr calls and strchr to ap_strchr calls to
+  stop warning when compiling with AP_DEBUG enabled in apache 2
+* Updated apache m4 to not pass for apache 1.3 if apache 2 is found
+
+1.97: 2004-04-08
+* fixed apache.m4 to work with apache 2 setups with different include
+  directories for APR and APU then core Apache
+* cleaned up configuration documentation (updated due to deprecated commands)
+* LogSQLLoginInfo updated to support a connection URI
+* new module "registration" macros to clean up new driver modules
+* mysql driver completely separted from core module
+
+1.96: 2004-03-04
+* fixed LogSQLPreserveFile config parameter
+* reworked safe_create_tables and core SQL insert routine.
+* renamed log_sql_* variables and typedefs to logsql_*
+* separated all mysql specific code to separate code module (DB abstraction)
+* separated TODO from Changelog
+* fixed default value of socket file. it's really /var/lib/mysql/mysql.sock not
+  /tmp/mysql.sock
+* Documentation completely converted to Docbook
+* Documentation updated. (still needs more work done)
+* LogSQLDelayedInserts config option removed
+* Added DB generic LogSQLDBParam. Usage is LogSQLDBParam param value
+  example: LogSQLDBParam tcpport 12345
+* notes, cookes, headersin, headersout tables are no longer created unless they
+  are used.
+
+1.95: 2004-02-05
+* audit and update of extract_* functions to acheive same output as 
+  mod_log_config.
+
+1.94: 2004-02-03
+* ssl loggin back in as separate module under 1.3 and 2.0
+* preparsing of format tags is now done to speed up main logging loop.
+* fixed a nasty bug with pointer arithmetic (ick) that caused a segfault with
+  LogSQLWhichCookies
+
+1.93: 2004-01-20
+* Compiles for apache 1.3 AND 2.0
+* split apache version specific functions to seperate header files
+* split apache version specific includes to seperate header files
+* added wrapper defines for apache 1.3
+* updated configure m4 scripts to detect both apache versions at the same time 
+  and assign defines as to which version was found.
+* made install default to not activate module in configuration files.
+  use make activate instead
+* split SSL logging to separate module (still needs to be finished)
+
+1.92: 2004-01-05
+* fixed compilation issue with mysql 4.x where mysql_error returns const char *
+* Have SSL support compiling (though not really tested)
+* updated configure macros to detect mod_ssl.h
+* configure now uses --with-apxs instead of --with-apache
+* Added documentation from 1.19b (needs to be update)
+* Fixed an issue with dependencies in Makefile.in
+
+1.91: 2003-12-23
+* Added checks for MySQL to autoconf
+* fixed merge code to work correctly.
+* Merged in 1.19b1 changes
+* Hostnames are now converted to lowercase in the mass-virtual naming section.
+  The loop that converts dots to underscores has been optimized as well.
+* New directive LogSQLTableType allows one to specify the kind of table that
+  the module makes during table creation (e.g. InnoDB, MyISAM).  Thanks to Jim
+  Turner for the suggestion and patch.  If your MySQL server does not support
+  the specified type, it will create a MyISAM table instead.
+* Directives can now be placed in the 'main' server config and will be
+  inherited by the virtual hosts.  This means a LOT less repetition: you only
+  specify the item once to have it inherited, but it can still be overridden
+  on a virtualhost level.  These can be specified in this manner:
+
+		LogSQLTransferLogTable
+		LogSQLTransferLogFormat
+		LogSQLPreserveFile
+		LogSQLNotesLogTable
+		LogSQLHeadersInLogTable
+		LogSQLHeadersOutLogTable
+		LogSQLCookieLogTable
+		LogSQLRemhostIgnore
+		LogSQLRequestIgnore
+		LogSQLRequestAccept
+		LogSQLWhichNotes
+		LogSQLWhichHeadersOut
+		LogSQLWhichHeadersIn
+		LogSQLWhichCookies
+		LogSQLWhichCookie
+
+1.90: 2003-12-22
+* updated code to compile under apache 2.0
+* rewrote and consolidate configuration handler routines
+* made all functions static.
+* made delayed insert configurable, instead of compile time
+* moved to my autoconfigure support
+
+1.18:
+* Delayed inserts (a MySQL extension) are now available at compile-time.
+  THIS IS UGLY because there seems to be a bug in the way MySQL returns
+  errors on failed INSERT DELAYED queries.  See the FAQ.
+* Reworked the Makefile a tad.
+* Added stdlib.h to the includes, some systems need it for atoi(). Added
+  string.h to the includes just to be safe.
+* Reworked table creation (again).  Inserts are attempted and tables
+  are made only on ER_NO_SUCH_TABLE.  This should solve all the multiple-
+  creation-attempt issues as well as reduce overhead.
+* safe_mysql_query reworked; it now can be counted on to preserve_entry()
+  if the query doesn't succeed.  [Before, preserve_entry() was called
+  separately.]
+* Always reset SIGPIPE to handler before leaving safe_mysql_query().
+* New directive LogSQLRequestAccept, another filter for excluding things
+  from being logged.
+* Alphabetized the directives in the reference section of the docs.
+* New format char 'a' lets one log the request arguments, i.e. the
+  part of a CGI request after the ? character.  Also put a column for
+  this in the create_tables.sql file.  Thanks to Dave Wilson for this.
+* Reorganized the FAQ by section.
+* Renamed global variables (e.g. tcp_port -> logsql_tcpport) throughout
+  the code in order to ensure against naming conflicts.  tcp_port, in
+  particular, seemed to be causing problems / segfaults on certain systems.
+* Renamed safe_mysql_query() to safe_sql_query().
+* Now check for minimum configuration info to establish db link and
+  log an error if it's insufficient.
+
+
+1.17:
+* Renamed the module mod_log_sql to conform to the project goal of
+  database-inspecificity.
+* Added capability of logging Notes field.  This is useful for folks using
+  custom modules that provide loggable info in the notes, e.g. mod_gzip.
+  A new directive LogSQLWhichNotes configures which notes to log to the
+  notes_log table.
+* Added capability of logging inbound and outbound headers. New directives
+  LogSQLWhichHeadersIn and LogSQLWhichHeadersOut configure which headers to
+  capture.  Headers are stored in their own table or tables.
+* Fixed potential segfault in preserve file function due to silly pfclose
+  placement. (Only affected user if the preserve file couldn't
+  be opened.)
+* Changed default socket file to /tmp/mysql.sock because that's the
+  default on a compiled MySQL.
+* Put back-quotes (`) around table name so that names with dashes are
+  legal.
+* Took away the prepend of /tmp to the preserve filename.  Now the
+  user can specify whatever local path they want.  I figure that
+  filesystem permissions will prevent people from doing anything
+  really dumb, and people have requested this change.
+* Better checking in the extract_cookie routine.  Before, it could
+  segfault if a person specified "c" but didn't define MySQLWhichCookie.
+* Some code reorg/renaming for clarity and to support the new direction
+  of database inspecificity.  More to come.
+* Simplified error messages.
+* Table creation now uses safe_mysql_query and checks the result.
+* Config directives used to begin with MySQL, now begin with LogSQL.
+  This is for database inspecificity.  In your httpd.conf just do
+  a search-and-replace.
+* More robust table-creation code with error checking.  [The race condition
+  that several users have reported may still exist, but this will go a long
+  way toward debugging the condition.]
+* Fixed bug whereby a MySQL connection was abandoned on reopen; the old
+  connection is now properly closed first.
+* Minor: remind user not to set createtables when massvirtual is on.
+* If Apache started but MySQL was unavailable, the module would do
+  everything it was supposed to (preserve entries, etc.) but not notify
+  the sysadmin. Added a log message to alert sysadmin if MySQL is
+  unreachable at startup.
+* New config key 'I' to extract & log unique_id, provided by mod_unique_id.
+  unique_id is the key that links separate tables (access, notes, etc.)
+* Migrated to the Artistic License (as used by Perl).
+* Moved table creation into its own callable function
+* Robustifying table creation
+* In make_combined_log.pl, backtick-quoted the table name and added an 
+  order-by clause within the select statement.
+* TCP port number for db connection is now configurable using LogSqlTCPPort
+* New directive LogSQLForcePreserve sends all log entries directly to the
+  preserve file and *entirely bypasses* the db.  Useful for debugging, but
+  can be dangerous if you forget it's set!
+* Table names are now quoted in all cases with backticks in order to permit
+  names containing dashes (since many hostnames contain dashes).
+* The request_method field is now created as a varchar(10) instead of (6),
+  after it was pointed out to me that some methods can be longer than 6.
+* New directive LogSQLMachineID sets a string identifier for the webserver
+  machine.  This is useful if you have a cluster of many webservers and you
+  want to differentiate between them in the logs:  you can tell which log
+  entries came from each machine and thereby analyze your loadbalacing
+  performance.  Activate with the TransferLogFormat character 'M'.  Much
+  faster than doing some sort of wacky IP addr lookup via local_addr().
+* Added an alternative way of logging cookies. If you need to associate 
+  multiple cookies with each request, the new way involves using 
+  LogSQLWhichCookies (note the plural) and LogSQLCookieLogTable.
+* Removed LogSQLRefererIgnore references, since it was never actually
+  activated anyway and the idea probably was of minimal value.
+
+
+1.16:
+* Moved all the user DEFINEs inside the .c file -- splitting them
+  between the C and the Makefile was getting just too cumbersome.
+* A new MySQLPreserveFile runtime config directive.  In the last
+  version the name of the preserve-file was hardcoded and therefore
+  global across all Apache virtual servers.  Now the user can configure
+  this on a per-virthost basis.  It defaults to a hardcoded value
+  if the user does not define it.  The module *always* prepends /tmp/
+  to the user-supplied value for security reasons.
+* A new MySQLSocketFile runtime config directive.  In the last
+  version the name of the MySQL socket was hardcoded.  Now the user
+  can configure this at Apache runtime.  However, it is a global
+  setting (set once) just like the rest of the actual database info is.
+  It defaults to a hardcoded value if the user does not define it.
+* A new MySQLCreateTables runtime config directive.  Module can now
+  create the access table on-the-fly.  Table creation takes place
+  during the virtual server's first request and is flagged after that to
+  avoid repetition.
+* A new MySQLMassVirtualHosting runtime config directive.  This flag
+  currently only activates a single feature: each virtual server gets
+  its very own dynamically-determined table prefixed 'access_' with the
+  server's name following.  It also implies MySQLCreateTables On, and
+  obviates the need for MySQLTransferLogTable.
+* escape_query (was mysql_escape_log) is now called on every item  
+  rather than first checking to see if it needs to be called, which
+  was probably a big waste of time.  Furthermore the routine now  
+  uses a native MySQL API call to do the escaping instead of doing 
+  this 'manually.'  It attempts to use the charset-respectful MySQL
+  call first, but falls back on a more generic call if the MySQL
+  server is unavailable (e.g. if it goes offline).
+* Open preserve file with pfopen instead of regular fopen to
+  take advantage of pool structure.
+* As forewarned, I finally got rid of the code to support separate
+  Referer and Agent logs.
+* Finally brought the make process up-to-date with the way Apache
+  likes modules to be done.
+* MySQLWhichCookie is now configurable on a per-virtualserver basis. 
+  Before it was single-shot global only.
+* Reduced sleep time on a retry to 1/4 second from 1/2 second.
+* Confirmed that this module will compile with -pedantic ... but not
+  with -ansi. :-)
+  
+
+1.15:
+* Vastly improved error reporting is a lot clearer about lost db
+  connections, etc.  Some unreachable code has been corrected.
+* The way that query-retries and openlink-retries are handled has 
+  been tweaked and improved.
+* Missed database entries are now preserved for later inclusion. This
+  file is not held open but is closed after each use, so it's safe
+  to delete while Apache is running.
+* Now each child instantiates its MySQL link upon birth rather than
+  waiting for its first request.
+
+
+1.14:
+* Improved the apxs instructions based on user feedback, including the
+  mysql.sock define issue.
+* Corrected the INSTALL example directives to the new format.
+* Some improvements to 'make distro'
+
+
+1.13:
+
+* Now use ap_get_server_name() in extract_virtual_host() to fix the
+  instances where mass-virtual-hosting sites were getting the wrong
+  server-name written to the log.
+* Now use mysql_real_connect() instead of mysql_connect().  The
+  latter's use was deprecated and did not work in MySQL 4.
+* There is now a DEFINE for the socket name.  This is used by the 
+  mysql_real_connect() function and is relevant only if the db resides
+  on localhost.  It is irrelevant if the db resides on a networked
+  machine and is ignored in that case (although it still must be defined
+  for the connect to work).
+
+
+1.12:
+
+* Added a mysql_close() call to get rid of those annoying MySQL
+  complaints every time an httpd child process terminates. (Apache
+  1.3 or later.)
+* Considerable code reorganization and cleanup.  
+
+
+1.11:
+
+* Completely re-worked the cookie code.  Now the user can instruct
+  mod_log_mysql which cookie (out of many available) to log.  (See
+  the online directives documentation and FAQ.)
+* New config capability: 'H' to log the request protocol 
+  (e.g. HTTP/1.1)
+* New config capability: 'm' to log the request method
+  (e.g. GET, PUT, etc.)
+* New config capabilities: 'z' 'q' & 'Q' to log SSL_CIPHER,
+  SSL_CIPHER_USEKEYSIZE and SSL_CIPHER_ALGKEYSIZE.  These require
+  openssl and glibc-devel to be installed.  (See the online
+  directives documentation and FAQ.)
+* Fixed a bug in make_combined_log.pl that caused it to generate
+  incorrect output on single-digit days.
+* Fixed make_combined_log.pl to use the data logged by 'H' and 'm'.
+* Migrated all log_error calls to the newer ap_log_error call.
+* Added a DEBUG define to activate certain debugging/informational
+  error-log messages (for devel purposes).
+* I apologize for the inconvenience this may cause:  I decided to
+  rename the runtime configuration directives so that they would
+  make more sense and group together with a "MySQL" prefix.  They
+  are now:
+	MySQLRefererLogTable
+        The MySQL table that holds the referer log
+	MySQLAgentLogTable 
+        The MySQL table that holds the agent log
+	MySQLTransferLogTable 
+        The MySQL table that holds the transfer log
+	MySQLTransferLogFormat 
+        Instruct the module what information to log to the MySQL transfer log
+	MySQLRefererIgnore 
+        List of referers to ignore, accesses that match will not be logged to 
+MySQL
+	MySQLRequestIgnore 
+        List of URIs to ignore, accesses that match will not be logged to MySQL
+	MySQLRemhostIgnore 
+        List of remote hosts to ignore, accesses that match will not be logged 
+to MySQL
+	MySQLDatabase 
+        The name of the MySQL database for logging
+	MySQLWhichCookie 
+        The CookieName that you want logged when using the 'c' config directive
+	MySQLLoginInfo 
+        The MySQL host, user-id and password for logging
+  You'll need to just do a search-and-replace in your httpd.conf...
+  Again, I'm sorry, but it really is better this way.
+* Cleaned up the summaries that get output on "httpd -L"
+* Expanded the enclosed access_log.sql file to support every column type
+  that mod_log_mysql provides -- delete the ones that you don't need.
+* Some cleanup of the Makefile - pay attention to the settings
+* Made the MySQLTransferLogFormat default "AbHhmRSsTUuv" to incorporate the
+  new column types and sort the characters alphabetically for reading ease.
+  
+  
+1.10:
+
+* New config directive/capability: 'c' to log mod_usertrack cookies.
+* Some code cleanup and commenting.
+* Referer and User-Agent now set to want_orig=1 ( a very minor detail )
+* Corrected mysql_escape_log to properly check for and escape strings
+  with `dangerous' characters.  It appears that it was doing this 
+  incorrectly before.
+* Deleted log_mysql_child(), a function that was never called.
+
+
+1.09:
+
+* If the MySQL INSERT causes an error, we re-try that INSERT after
+  a short 1/2-second sleep just to make sure it wasn't due to a 
+  network glitch or other gremlin.
+* Made the default log format: huSUsbTvRA.  This provides everything
+  required to reproduce Combined Log Format data.
+
+
+1.08: 
+
+* Now log a single '-' (instead of a zero-length string) when
+  User-Agent is blank. This is similar to what Apache does in its own
+  logs.  (Should have caught this when I did the same thing for
+  Referer.)
+* Separated documentation into README, INSTALL, CHANGELOG, etc. as
+  appropriate.
+
+
+1.07:
+
+* Renamed TransferIgnore directive to RequestIgnore, since that's
+  really a more specific and accurate description of what that
+  directive means. 
+* Now log a single '-' (instead of a zero-length string) when Referer
+  is blank. This is similar to what Apache does in its own logs.
+
+
+1.06:
+
+* Added 'R' and 'A' options to TransferLogMySQLFormat so that we now
+  can log Referer and Agent respectively. 
+* Code cleanup: all compilation warnings are now gone, even with -Wall. 
+  (They were mainly "const" issues that needed straightening up.)
+* Added RemhostIgnore configuration directive to permit non-logging of
+  any request coming from a specific host, e.g. a local network
+  machine, etc. 
+* Now use the non-obsolete ap_compat.h headerfile instead of
+  compat.h.  This simply gets rid of a compilation warning, nothing
+  more.
+* Now include a headerfile (http_log.h) that was missing.  Its
+  absence was giving us this warning message: "implicit declaration of
+  function `ap_log_error_old'."
+* For numerics that Apache customarily logs as a "-" we now log a zero
+  instead of a -1.  This seems to be more intuitive, e.g. in the
+  "bytes_sent" column.
+* We now have a Makefile and a full "make" process that does all
+  the real work.
+* New maintainer.
+ 
+
+1.05:
+
+* Removed some redundant code, after being noted by Vivek Khera that
+  this code doesn't even get called with the current apache code.  It
+  can be done in apache 1.3, but it works ok without it anyway.
+* Added the necessary include file to make the module compile under
+  Apache 1.3b6.  I haven't actually tested that it works, though.
+  indent'd the code.
+
+
+1.04:
+
+* Rearranged some code to allow for a successful apache 1.3beta
+  compilation.  Please note that this is *untested*, I only got it to
+  compile, I haven't actually tried to run apache 1.3.
+
+
+1.03:
+
+* Changed the check for 'mysql server has gone away' to be case
+  insensitive, so that it works with MySQL 3.21
+* Changed the behavior so that a link isn't established until it's
+  necessary (e.g., if SQL logging is used for one virtual IP, a link
+  won't be opened until there's an access to that IP).
+
+
+1.02:
+
+* Managed to track down that segmentation fault that occured once, and
+  fixed it.  No known bugs now exist.
+
+
+1.01:
+
+* Segmentation fault in case of certain parameters lacking fixed.
+* Worked around the SIGPIPE signal that's sent in certain events from
+* mysql_query(). Minor modifications
